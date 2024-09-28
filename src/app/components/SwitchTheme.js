@@ -15,17 +15,17 @@ export function SwitchThemes() {
   if (!mounted) return null;
 
   return (
-    <div className="flex items-center bg-gray-700 rounded-xl p-2">
+    <div className="flex items-center">
       {theme === "dark" ? (
         <FiSun
-          size={22}
+          size={20}
           onClick={() => setTheme("light")}
           className="cursor-pointer"
           aria-label="Switch to light mode"
         />
       ) : (
         <FiMoon
-          size={22}
+          size={20}
           onClick={() => setTheme("dark")}
           className="cursor-pointer"
           aria-label="Switch to dark mode"

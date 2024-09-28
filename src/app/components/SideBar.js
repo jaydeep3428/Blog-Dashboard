@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { AcmeLogo } from "./AcmeLogo";
 import { MdOutlineAnalytics } from "react-icons/md";
 import { IoIosReturnLeft } from "react-icons/io";
 import { FaBook } from "react-icons/fa";
@@ -26,11 +25,11 @@ export default function SideBar() {
   return (
     <div>
       <aside
-        className={`flex flex-col h-screen border-r border-gray-800 transition-width duration-300 ${
+        className={`flex flex-col h-screen border-r border-foreground-200 transition-width duration-300 ${
           isCollapsed ? "w-20" : "w-72"
         }`}
       >
-        <div className="py-3 pl-4 pr-4">
+        <div className="py-3 px-3">
           <div className="flex justify-between items-center">
             <div>
               {!isCollapsed && (
@@ -38,7 +37,7 @@ export default function SideBar() {
               )}
             </div>
             <div
-              className="border-2 border-gray-600 rounded-xl p-2 cursor-pointer"
+              className="border-2 border-foreground-200 rounded-xl p-2 cursor-pointer"
               onClick={toggleSidebar}
             >
               <IoIosReturnLeft size={20} />
@@ -48,49 +47,66 @@ export default function SideBar() {
             <div>
               <ul className="flex flex-col">
                 <li
-                  className={`flex items-center gap-8 rounded-2xl p-4 cursor-pointer ${getLinkClasses(
-                    "/components/Analytics"
+                  className={`flex items-center gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                    "/components/BlogDashboard/Analytics"
                   )}`}
                 >
-                  <Link href="/components/Analytics">
+                  <Link href="/components/BlogDashboard/Analytics">
                     <MdOutlineAnalytics size={20} />
                   </Link>
                   {!isCollapsed && (
-                    <Link href="/components/Analytics">Analytics</Link>
+                    <Link href="/components/BlogDashboard/Analytics">
+                      Analytics
+                    </Link>
                   )}
                 </li>
                 <li
-                  className={`flex items-center gap-8 rounded-2xl p-4 cursor-pointer ${getLinkClasses(
-                    "/components/@"
+                  className={`flex items-center gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                    "/components/BlogDashboard/Bloglist"
                   )}`}
                 >
-                  <FaBook size={20} />
+                  <Link href="/components/BlogDashboard/Bloglist">
+                    <FaBook size={20} />
+                  </Link>
                   {!isCollapsed && (
-                    <Link className="font-semibold" href="@">
+                    <Link
+                      className="font-semibold"
+                      href="/components/BlogDashboard/Bloglist"
+                    >
                       Blog list
                     </Link>
                   )}
                 </li>
                 <li
-                  className={`flex items-center gap-8 rounded-2xl p-4 cursor-pointer ${getLinkClasses(
-                    "/components/@"
+                  className={`flex items-center gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                    "/components/BlogDashboard/Blog"
                   )}`}
                 >
-                  <FaPencilAlt size={20} />
+                  <Link href="/components/BlogDashboard/Blog">
+                    <FaPencilAlt size={20} />
+                  </Link>
                   {!isCollapsed && (
-                    <Link className="font-semibold" href="@">
+                    <Link
+                      className="font-semibold"
+                      href="/components/BlogDashboard/Blog"
+                    >
                       Create a Blog
                     </Link>
                   )}
                 </li>
                 <li
-                  className={`flex items-center gap-8 rounded-2xl p-4 cursor-pointer ${getLinkClasses(
-                    "/components/@"
+                  className={`flex items-center gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                    "/components/BlogDashboard/BookMark"
                   )}`}
                 >
-                  <GiBookCover size={20} />
+                  <Link href="/components/BlogDashboard/BookMark">
+                    <GiBookCover size={20} />
+                  </Link>
                   {!isCollapsed && (
-                    <Link className="font-semibold" href="@">
+                    <Link
+                      className="font-semibold"
+                      href="/components/BlogDashboard/BookMark"
+                    >
                       Bookmarks
                     </Link>
                   )}

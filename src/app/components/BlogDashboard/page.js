@@ -1,52 +1,14 @@
-import {
-  Button,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Snippet,
-} from "@nextui-org/react";
-import { AcmeLogo } from "../AcmeLogo";
+import { Snippet } from "@nextui-org/react";
 import Link from "next/link";
-import { SwitchThemes } from "../SwitchTheme";
-import SideBar from "../SideBar";
 import { FaAngleLeft } from "react-icons/fa";
 import Image from "next/image";
 
 export default function BlogDashboard() {
   return (
-    <div className="h-screen overflow-hidden">
-      <div>
-        <Navbar isBlurred isBordered>
-          <NavbarBrand>
-            <AcmeLogo />
-            <p className="font-bold text-inherit">BLOG</p>
-          </NavbarBrand>
-          <NavbarContent justify="end">
-            <NavbarItem className="hidden lg:flex">
-              <Button color="danger" variant="bordered">
-                Visit Site
-              </Button>
-            </NavbarItem>
-            <SwitchThemes />
-            <NavbarItem>
-              <Link
-                color="foreground"
-                className="text-tiny bg-primary px-4 pt-3 pb-3 rounded-xl"
-                href="#"
-              >
-                G
-              </Link>
-            </NavbarItem>
-          </NavbarContent>
-        </Navbar>
-      </div>
+    <div>
       <div className="flex w-full">
-        <div>
-          <SideBar />
-        </div>
-        <div className="w-full flex justify-center h-screen overflow-y-scroll py-4">
-          <div className="w-3/5 ">
+        <div className="w-full flex justify-center h-screen overflow-y-scroll py-2 sm:py-4">
+          <div className="w-11/12 sm:w-3/5">
             <div className="flex gap-2 items-center py-6">
               <FaAngleLeft />
               <Link href="/" color="foreground">
@@ -76,15 +38,17 @@ export default function BlogDashboard() {
                 </h1>
                 <div className="pl-3">
                   <p>
-                    Definition: useParams is a hook that allows you to have
-                    access to dynamic parameters in the URL(Uniform Resource
-                    Locator).
+                    <span style={{ color: "greenyellow" }}>Definition: </span>
+                    useParams is a hook that allows you to have access to
+                    dynamic parameters in the URL(Uniform Resource Locator).
                   </p>
                   <p className="py-6">
-                    Use Case: React JS useParams Hook helps to access the
-                    parameters of the current route to manage the dynamic routes
-                    in the URL.
+                    <span style={{ color: "greenyellow" }}>Use case: </span>
+                    React JS useParams Hook helps to access the parameters of
+                    the current route to manage the dynamic routes in the URL.
                   </p>
+                </div>
+                <div className="mb-16">
                   <h1 className="py-6 font-semibold text-2xl text-warning">
                     Setting Up React Router
                   </h1>
@@ -98,7 +62,9 @@ export default function BlogDashboard() {
                   </Snippet>
                   <p className="py-6 text-success-400">App.js</p>
                   <Snippet className="w-full">
-                    <span> import React from &quot;react&quot;;</span>
+                    <span style={{ color: "purple" }}>
+                      import React from &quot;react&quot;;
+                    </span>
                     <span>import React from &quot;react&quot;;</span>
                     <span>import React from &quot;react&quot;;</span>
                     <span>
