@@ -10,10 +10,15 @@ import { useState } from "react";
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import { toast, Toaster } from "sonner";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const router = useRouter();
+
+  const { theme } = useTheme();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -126,6 +131,7 @@ export default function SignUp() {
         email: "",
         password: "",
       });
+      router.push("/components/SignIn");
     } else {
       toast.danger("Please Enter Valid Data!");
     }
@@ -133,9 +139,16 @@ export default function SignUp() {
   return (
     <div>
       <Toaster position="top-right" richColors />
-      <div className="flex justify-center items-center my-4 mx-2 sm:mx-0 sm:my-10 backdrop-blur-sm">
-        <div className="w-full sm:w-3/5 md:w-2/4 lg:w-5/12 xl:w-1/3">
-          <div className="border-2 w-full bg-[radial-gradient(circle_at_5%_95%,_rgba(85,30,128,0.8),_rgba(0,0,0,0.5)_20%),_radial-gradient(circle_at_90%_5%,_rgba(5,120,183,0.83),_#000_20%)] rounded-2xl border-foreground-200 px-4 py-8 sm:px-10 sm:py-10">
+      <div className="flex justify-center items-center min-h-screen backdrop-blur-sm">
+        <div className="w-full p-2 sm:p-6 max-w-lg">
+          <div
+            className={`border-2 w-full ${
+              theme === "dark"
+                ? "bg-[radial-gradient(circle_at_5%_95%,_rgba(85,30,128,0.8),_rgba(0,0,0,0.5)_20%),_radial-gradient(circle_at_90%_5%,_rgba(5,120,183,0.83),_rgba(0,0,0,0)_20%)]"
+                : "bg-[radial-gradient(circle_at_5%_95%,_rgba(85,30,128,0.8),_rgba(0,0,0,0)_20%),_radial-gradient(circle_at_95%_0%,_rgba(5,120,183,0.8),_rgba(0,0,0,0)_20%)]"
+            }
+             rounded-2xl border-foreground-200 px-4 py-8 sm:px-10 sm:py-10`}
+          >
             <form onSubmit={handleSubmit} action="#" method="#">
               <h1 className="flex items-center text-2xl mb-4">
                 <AcmeLogo />

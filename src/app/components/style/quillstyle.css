@@ -1,0 +1,33 @@
+:root {
+  --editor-bg-light: hsl(240, 4%, 96%);
+}
+.dark {
+  --editor-bg-dark: hsl(240, 4%, 16%);
+}
+.ql-snow .ql-editor {
+  min-height: 200px;
+  background-color: var(--editor-bg-light);
+  border-radius: 12px;
+}
+.dark .ql-snow .ql-editor {
+  background-color: var(--editor-bg-dark);
+}
+.ql-snow {
+  border: none;
+  border-radius: 12px 12px 0 0;
+}
+.ql-toolbar {
+  border: 2px solid hsl(240, 4%, 46%, 1);
+  background-color: transparent;
+}
+.ql-container {
+  background-color: var(--editor-bg-dark);
+  border-radius: 0 0 12px 12px;
+}
+.ql-snow .ql-toolbar {
+  background-color: #007bff;
+}
+
+.ql-snow .ql-toolbar button:hover {
+  background-color: #0056b3;
+}

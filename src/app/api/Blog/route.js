@@ -9,7 +9,7 @@ export async function GET() {
   try {
     await mongoose.connect(blogconnectionstr);
     data = await BlogData.find();
-    console.log(data);
+    // console.log(data);
   } catch (error) {
     data = { result: "error" };
     success = false;

@@ -1,25 +1,27 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   Button,
   Breadcrumbs,
   BreadcrumbItem,
   Input,
   Textarea,
-  Divider,
   Select,
   SelectItem,
-  Link,
   Switch,
 } from "@nextui-org/react";
-import { PiCaretUpDownFill } from "react-icons/pi";
-import { GoBold } from "react-icons/go";
-import { FaItalic } from "react-icons/fa";
-import { MdOutlineFormatUnderlined } from "react-icons/md";
-import { MdStrikethroughS } from "react-icons/md";
-import { PiTextAUnderlineBold } from "react-icons/pi";
 import { toast, Toaster } from "sonner";
 import Image from "next/image";
+import "react-quill/dist/quill.snow.css";
+import "../../style/quillstyle.css";
+import { useDropzone } from "react-dropzone";
+import Link from "next/link";
+import { PiXCircleDuotone } from "react-icons/pi";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+const defaultImage = "/vector.jpg";
 
 export default function Blog() {
   const [title, setTitle] = useState("");
@@ -34,9 +36,8 @@ export default function Blog() {
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-  // Handle image selection
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const onDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -46,6 +47,17 @@ export default function Blog() {
     }
   };
 
+  const clearImage = (e) => {
+    e.stopPropagation();
+    setSelectedImage(null);
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: "image/*",
+    multiple: false,
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,19 +66,21 @@ export default function Blog() {
       return;
     }
 
+    const postData = {
+      title,
+      description,
+      prompt,
+      content,
+      category,
+      tags,
+      metatitle,
+      metadescription,
+      cover: selectedImage,
+    };
+
     let result = await fetch(`${BASE_URL}/api/Blog`, {
       method: "POST",
-      body: JSON.stringify({
-        title,
-        description,
-        prompt,
-        content,
-        category,
-        tags,
-        metatitle,
-        metadescription,
-        image: selectedImage,
-      }),
+      body: JSON.stringify(postData),
     });
     result = await result.json();
     if (result.success) {
@@ -75,21 +89,102 @@ export default function Blog() {
       setDescription("");
       setPrompt("");
       setContent("");
-      setCategory("");
-      setSelectedImage("");
-      setTags("");
+      setCategory([]);
+      setTags([]);
       setMetatitle("");
       setMetadescription("");
+      setSelectedImage(null);
     } else {
       toast.error("Failed to add data.");
     }
   };
 
+  const toolbarOptions = [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }, { background: [] }],
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+    [{ script: "super" }, { script: "sub" }],
+    ["code-block", "blockquote"],
+    ["link", "image", "video"],
+    [{ font: [] }],
+    ["clean"],
+  ];
+
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `
+      :root {
+        --quill-button-color: #000000;
+        --quill-button-background: #ffffff;
+        --quill-editor-bg: #ffffff;
+        --editor-border-light: hsl(240, 6%, 90%,1);
+      }
+      .dark {
+        --quill-button-color: #ffffff;
+        --quill-button-background: #333333;
+        --quill-editor-bg: #1a1a1a;
+        --editor-border-dark: hsl(240, 5%, 26%,1);
+      }
+      .ql-editor::before {
+        color: rgba(0, 0, 0, 0.5); 
+      }
+      .dark .ql-editor::before {
+        color: rgba(255, 255, 255, 0.5);  
+      }
+      .ql-toolbar.ql-snow {
+        border: 2px solid var(--editor-border-dark);
+        padding: 0.5rem;
+      }
+      .ql-container.ql-snow {
+        border: 2px solid var(--editor-border-dark);
+        border-top: none;
+      }
+      .light .ql-toolbar.ql-snow{
+        border: 2px solid var(--editor-border-light)
+      }  
+      .light .ql-container.ql-snow{
+        border: 2px solid var(--editor-border-light)
+      }    
+      .ql-editor {
+        min-height: 200px;
+        max-height: 400px;
+        font-size: 1rem;
+        line-height: 1.5;
+        overflow-y: auto;
+        scrollbar-width: none; 
+        -ms-overflow-style: none; 
+      }
+      .ql-editor::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      .ql-toolbar.ql-snow .ql-formats button {
+        color: var(--quill-button-color);
+      }
+      .ql-toolbar.ql-snow .ql-picker-label {
+        color: var(--quill-button-color);
+      }
+      .ql-toolbar.ql-snow .ql-stroke {
+        stroke: var(--quill-button-color);
+      }
+      .ql-toolbar.ql-snow .ql-fill {
+        fill: var(--quill-button-color);
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
-    <div className="h-screen overflow-hidden">
+    <div>
       <Toaster richColors position="top-right" />
-      <div className="flex w-full">
-        <div className="w-full h-screen overflow-y-scroll flex flex-col p-8">
+      <div>
+        <div className="w-full flex flex-col p-2 sm:p-8">
           <div className="flex justify-between items-center">
             <Breadcrumbs>
               <BreadcrumbItem>App</BreadcrumbItem>
@@ -98,20 +193,20 @@ export default function Blog() {
             </Breadcrumbs>
           </div>
           <div className="pt-8 pb-12">
-            <h1 className="text-3xl font-medium tracking-wide">
+            <h1 className="text-2xl sm:text-3xl font-medium tracking-wide">
               Create a Blog
             </h1>
           </div>
           <div>
-            <div className="flex">
-              <div className="w-1/2">
+            <div className="flex flex-col xl:flex-row">
+              <div className="w-full xl:w-1/2">
                 <h2 className="text-xl">Details</h2>
-                <p className="text-foreground-400 text-base mt-1">
+                <p className="text-foreground-400 text-base mt-1 mb-6 xl:mb-0">
                   Title,short description,image...
                 </p>
               </div>
-              <div className="w-1/2 bg-foreground-50 p-6 rounded-xl">
-                <form onSubmit={handleSubmit} action="#">
+              <div className="w-full xl:w-1/2 bg-foreground-50 p-2 sm:p-8 rounded-xl">
+                <form action="#">
                   <div>
                     <label className="font-normal">Title</label>
                     <Input
@@ -153,26 +248,16 @@ export default function Blog() {
                   </div>
                   <div className="flex flex-col items-start w-full mb-6">
                     <label className="mb-2">Content</label>
-                    <div className="w-full border-2 rounded-xl border-foreground-200">
-                      <div className="flex items-center p-4 gap-5">
-                        <p>Normal</p>
-                        <PiCaretUpDownFill size={20} />
-                        <GoBold size={20} />
-                        <FaItalic size={20} />
-                        <MdOutlineFormatUnderlined size={20} />
-                        <MdStrikethroughS size={20} />
-                        <PiTextAUnderlineBold size={20} />
-                      </div>
-                      <Divider className="h-0.5" />
+                    <div className="w-full">
                       <div>
-                        <Textarea
-                          radius="none"
-                          type="text"
-                          label="Write something awesome.."
-                          // rows={9}
-                          className="row-span-9"
+                        <ReactQuill
+                          theme="snow"
+                          placeholder="Write something awesome..."
                           value={content}
-                          onChange={(e) => setContent(e.target.value)}
+                          modules={{
+                            toolbar: toolbarOptions,
+                          }}
+                          onChange={setContent}
                         />
                       </div>
                     </div>
@@ -185,6 +270,7 @@ export default function Blog() {
                       variant="bordered"
                       radius="lg"
                       className="mt-3 mb-6"
+                      selectionMode="multiple"
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                     >
@@ -195,43 +281,51 @@ export default function Blog() {
                   </div>
                   <div className="w-full">
                     <label className="mb-2">Cover</label>
-                    <div className="relative mt-3 border-2 border-foreground-200 bg-foreground-100 rounded-xl p-1 flex items-center justify-center w-full h-80">
+                    <div
+                      {...getRootProps({ className: "dropzone" })}
+                      className="border-2 border-foreground-200 bg-foreground-100 flex flex-col justify-center items-center mt-3 h-80 cursor-pointer rounded-lg"
+                    >
+                      <input {...getInputProps()} />
                       {selectedImage ? (
-                        <Image
-                          src={selectedImage}
-                          alt="Selected Cover"
-                          layout="fill"
-                          objectFit="cover"
-                          className="object-cover w-full h-full rounded-lg"
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center">
+                        <div className="relative w-full h-full">
                           <Image
-                            src="/vector.jpg" // Default image path
-                            alt="Default"
+                            src={selectedImage}
+                            alt="Selected Preview"
                             width={200}
-                            height={176}
-                            className="w-50 h-44 rounded-2xl mb-4"
+                            height={200}
+                            className="w-full h-full object-cover rounded-lg"
                           />
-                          <h1 className="text-xl font-bold mb-3">
+                          <button
+                            onClick={clearImage}
+                            className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1 hover:bg-gray-600"
+                          >
+                            <PiXCircleDuotone className="w-5 h-5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full">
+                          <Image
+                            src={defaultImage}
+                            alt="Default Preview"
+                            height={176}
+                            width={200}
+                            className="w-40 h-36 object-cover rounded-lg"
+                          />
+                          <h1 className="text-xl font-bold my-3">
                             Drop or Select file
                           </h1>
-                          <p>
-                            Drop files here or click{" "}
-                            <Link href="#" underline="active">
+                          <p className="text-center">
+                            Drag files here or click{" "}
+                            <Link
+                              href="#"
+                              className="border-b-2 border-primary text-primary"
+                            >
                               browse
                             </Link>{" "}
                             through your machine
                           </p>
                         </div>
                       )}
-
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                      />
                     </div>
                   </div>
                 </form>
@@ -239,15 +333,15 @@ export default function Blog() {
             </div>
           </div>
           <div className="mt-6">
-            <div className="flex">
-              <div className="w-1/2">
+            <div className="flex flex-col xl:flex-row ">
+              <div className="w-full xl:w-1/2 mb-6 xl:mb-0">
                 <h1 className="text-xl">Properties</h1>
                 <p className="text-foreground-400 mt-1">
                   Meta data,tags,attributes..
                 </p>
               </div>
-              <div className="w-1/2">
-                <div className="bg-foreground-50 p-6 mb-7 rounded-xl">
+              <div className="w-full xl:w-1/2">
+                <div className="bg-foreground-50 p-2 sm:p-6 mb-7 rounded-xl">
                   <form>
                     <div>
                       <label>Tags</label>
@@ -257,6 +351,9 @@ export default function Blog() {
                         variant="bordered"
                         radius="lg"
                         className="mt-3 mb-6"
+                        selectionMode="multiple"
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
                       >
                         <SelectItem>a</SelectItem>
                         <SelectItem>p</SelectItem>
@@ -272,6 +369,8 @@ export default function Blog() {
                         radius="lg"
                         size="sm"
                         className="mt-3 mb-6"
+                        value={metatitle}
+                        onChange={(e) => setMetatitle(e.target.value)}
                       />
                     </div>
                     <div>
@@ -283,6 +382,8 @@ export default function Blog() {
                         radius="lg"
                         size="sm"
                         className="mt-3 mb-6 col-span-12 md:col-span-6"
+                        value={metadescription}
+                        onChange={(e) => setMetadescription(e.target.value)}
                       />
                     </div>
                     <div>
@@ -290,15 +391,19 @@ export default function Blog() {
                     </div>
                   </form>
                 </div>
-                <div className="mb-14 flex items-center justify-between">
-                  <div className="pl-6">
+                <div className="flex items-start sm:items-center flex-col sm:flex-row sm:justify-between">
+                  <div className="pl-2.5 pb-7 sm:pb-0 sm:pl-6">
                     <Switch defaultSelected>publish</Switch>
                   </div>
                   <div className="gap-3 flex">
                     <Button color="primary" variant="flat">
                       Preview
                     </Button>
-                    <Button type="submit" color="primary">
+                    <Button
+                      type="submit"
+                      color="primary"
+                      onClick={handleSubmit}
+                    >
                       Create Post
                     </Button>
                   </div>

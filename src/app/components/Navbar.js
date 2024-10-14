@@ -8,35 +8,21 @@ import {
   DropdownTrigger,
   Dropdown,
   DropdownMenu,
-  Avatar,
   Button,
-  Divider,
 } from "@nextui-org/react";
 import { AcmeLogo } from "./AcmeLogo";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { SwitchThemes } from "./SwitchTheme";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
+import AuthContext from "./BlogDashboard/Context/AuthContext";
 
 export default function App() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      window.location.href = "/components/SignIn";
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/components/SignIn";
-  };
+  const { user, logout } = useContext(AuthContext);
 
   const userInitial = user?.name
     ? user.name.charAt(0).toUpperCase()
     : user?.email?.charAt(0).toUpperCase() || "?";
+
   return (
     <Navbar maxWidth="full" isBordered>
       <NavbarBrand>
@@ -49,6 +35,7 @@ export default function App() {
             endContent={<BsBoxArrowUpRight />}
             color="danger"
             variant="bordered"
+            className="md:flex hidden"
           >
             Visit Site
           </Button>
@@ -66,14 +53,25 @@ export default function App() {
             </NavbarItem>
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">
-            <DropdownItem key="profile" className="h-14 gap-2">
-              <p className="font-semibold">Signed in as an</p>
+            <DropdownItem
+              key="profile"
+              className="h-14 gap-2 border-b-2 border-foreground-200 rounded-none"
+            >
+              <p className="font-semibold">Signed in as</p>
               <p className="font-semibold">{user?.email}</p>
             </DropdownItem>
-            <DropdownItem key="system">
+            <DropdownItem
+              key="system"
+              className="border-b-2 border-foreground-200 rounded-none"
+            >
               <Link href="/">Home</Link>
             </DropdownItem>
-            <DropdownItem key="logout" color="danger" onClick={handleLogout}>
+            <DropdownItem
+              key="logout"
+              className="rounded-none"
+              color="danger"
+              onClick={logout}
+            >
               Log Out
             </DropdownItem>
           </DropdownMenu>

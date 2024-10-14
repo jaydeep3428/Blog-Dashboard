@@ -3,14 +3,25 @@ import { Button, Divider, Input } from "@nextui-org/react";
 import { AcmeLogo } from "../AcmeLogo";
 import { RiShieldUserFill } from "react-icons/ri";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
+import AuthContext from "../BlogDashboard/Context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 export default function SignIn() {
+  const { user, login } = useContext(AuthContext);
   const [formData, setFormData] = useState({ email: "" });
   const [error, setError] = useState("");
   const router = useRouter();
+
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/components/BlogDashboard");
+    }
+  }, [user, router]);
 
   const handleChange = (e) => {
     setFormData({
@@ -48,21 +59,27 @@ export default function SignIn() {
     const data = await res.json();
 
     if (res.ok) {
-      localStorage.setItem("user", JSON.stringify(data.user));
+      login(data.user);
       toast.success("Login successful!");
-      router.push("/components/BlogDashboard"); // Redirect to dashboard
     } else {
-      setError("Email is not found in our registerdata!");
+      setError("Email is not found in our register data!");
       toast.error("Invalid credentials!");
     }
   };
 
-  return (
+  return user ? null : (
     <div>
       <Toaster position="top-right" richColors />
-      <div className="flex justify-center items-center h-auto backdrop-blur-sm my-36 mx-2 sm:mx-0">
-        <div>
-          <div className="border-2 bg-[radial-gradient(circle_at_5%_95%,_rgba(85,30,128,0.8),_rgba(0,0,0,0.5)_20%),_radial-gradient(circle_at_93%_5%,_rgba(5,120,183,0.83),_#000_20%)] w-full rounded-2xl border-foreground-200 px-6 py-6 sm:px-10 sm:py-10">
+      <div className="flex justify-center items-center min-h-screen backdrop-blur-sm">
+        <div className="p-2 sm:p-6">
+          <div
+            className={`border-2 w-full ${
+              theme === "dark"
+                ? "bg-[radial-gradient(circle_at_5%_95%,_rgba(85,30,128,0.8),_rgba(0,0,0,0.5)_20%),_radial-gradient(circle_at_90%_5%,_rgba(5,120,183,0.83),_rgba(0,0,0,0)_20%)]"
+                : "bg-[radial-gradient(circle_at_5%_95%,_rgba(85,30,128,0.3),_rgba(0,0,0,0)_20%),_radial-gradient(circle_at_95%_0%,_rgba(5,120,183,0.3),_rgba(0,0,0,0)_20%)]"
+            }
+             rounded-2xl border-foreground-200 px-4 py-8 sm:px-10 sm:py-10`}
+          >
             <form onSubmit={handleSubmit}>
               <h1 className="flex items-center text-2xl mb-4">
                 <AcmeLogo />

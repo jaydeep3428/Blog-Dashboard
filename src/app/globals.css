@@ -10,6 +10,10 @@ body {
   font-family: var(--font-poppins);
 }
 
+.modal {
+  backdrop-filter: blur(8px); /* Blur effect for the modal background */
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
