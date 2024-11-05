@@ -16,20 +16,29 @@ export async function GET(request, content) {
 export async function PUT(request, content) {
   const Id = content.params.id;
   const filter = { _id: Id };
-  const payload = await request.json();
 
-  console.log("Received payload for update:", payload);
+  try {
+    const formData = await request.formData();
+    const payload = Object.fromEntries(formData.entries());
 
-  await mongoose.connect(blogconnectionstr);
-  const result = await BlogData.findOneAndUpdate(filter, payload, {
-    new: true,
-  });
-  console.log(result);
+    if (formData.has("cover")) {
+      // Optional: handle image upload, for example, saving to cloud storage
+      const cover = formData.get("cover");
+      // Process cover if it's a new file, e.g., save it and update the path in the payload
+      payload.cover = cover; // Set cover URL or file path
+    }
 
-  if (result) {
-    return NextResponse.json({ result, success: true });
-  } else {
-    return NextResponse.json({ success: false, message: "Update failed" });
+    await mongoose.connect(blogconnectionstr);
+    const result = await BlogData.findOneAndUpdate(filter, payload, {
+      new: true,
+    });
+
+    return result
+      ? NextResponse.json({ result, success: true })
+      : NextResponse.json({ success: false, message: "Update failed" });
+  } catch (error) {
+    console.error("Update error:", error);
+    return NextResponse.json({ success: false, message: "Update error" });
   }
 }
 

@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import ApexCharts from "apexcharts";
 
-export default function PureLineChart() {
+export default function ProductCChart4() {
   useEffect(() => {
-    // Define the data for Product C
     const dataSet = [
       { x: new Date("2014-01-11").getTime(), y: 200 },
       { x: new Date("2014-01-12").getTime(), y: 1000 },
@@ -11,7 +10,6 @@ export default function PureLineChart() {
       { x: new Date("2014-01-14").getTime(), y: 250 },
     ];
 
-    // Define chart options
     const options = {
       series: [
         {
@@ -21,46 +19,59 @@ export default function PureLineChart() {
         },
       ],
       chart: {
-        type: "line", // Simple line chart
+        type: "area",
         height: 100,
         width: 150,
-        toolbar: { show: false }, // Disable chart tools
+        toolbar: { show: false },
+        background: "transparent",
       },
       stroke: {
-        curve: "smooth", // A simple straight line
+        curve: "smooth",
         width: 2.5,
+      },
+      fill: {
+        type: "gradient",
+        gradient: {
+          shade: "dark",
+          type: "vertical",
+          gradientToColors: ["rgba(236,72,153,0.1)", "rgba(236,72,153,0.8)"],
+          stops: [0, 80],
+          opacityFrom: 0.7,
+          opacityTo: 0.2,
+        },
+      },
+      dataLabels: {
+        enabled: false,
       },
       xaxis: {
         type: "datetime",
         labels: {
-          show: false, // Hide bottom date labels
+          show: false,
         },
-        axisBorder: { show: false }, // Remove X-axis border
-        axisTicks: { show: false }, // Remove X-axis ticks
+        axisBorder: { show: false },
+        axisTicks: { show: false },
       },
       yaxis: {
         labels: {
-          show: false, // Hide Y-axis labels (no million formatting)
+          show: false,
         },
-        axisBorder: { show: false }, // Remove Y-axis border
-        axisTicks: { show: false }, // Remove Y-axis ticks
+        axisBorder: { show: false },
+        axisTicks: { show: false },
       },
       grid: {
-        show: false, // Disable grid lines for simplicity
+        show: false,
       },
       markers: {
-        size: 0, // No markers on the line
+        size: 0,
       },
       tooltip: {
-        enabled: false, // Disable tooltip (hover date)
+        enabled: false,
       },
     };
 
-    // Render the chart
     const chart = new ApexCharts(document.querySelector("#chart2"), options);
     chart.render();
 
-    // Cleanup chart on component unmount
     return () => {
       chart.destroy();
     };

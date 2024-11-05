@@ -46,6 +46,8 @@ export default function SignIn() {
       return;
     }
 
+    setError("");
+
     const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     const res = await fetch(`${BASE_URL}/api/login`, {
@@ -130,7 +132,7 @@ export default function SignIn() {
                 <span>
                   <Link
                     href="../components/SignUp"
-                    className="text-base sm:text-lg ml-0 sm:ml-3 text-primary"
+                    className="text-base sm:text-lg ml-0 sm:ml-3 text-primary hover:border-b-1 border-primary"
                   >
                     Create an account now!
                   </Link>

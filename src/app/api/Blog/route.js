@@ -19,6 +19,11 @@ export async function GET() {
 export async function POST(request) {
   let success = true;
   const payload = await request.json();
+
+  if (!payload.author) {
+    return NextResponse.json({ error: "Author is required" }, { status: 400 });
+  }
+
   await mongoose.connect(blogconnectionstr);
 
   let Bloglist = new BlogData(payload);

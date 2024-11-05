@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import dynamic from "next/dynamic";
 import {
   Button,
@@ -18,12 +18,16 @@ import "../../style/quillstyle.css";
 import { useDropzone } from "react-dropzone";
 import Link from "next/link";
 import { PiXCircleDuotone } from "react-icons/pi";
+import { useRouter } from "next/navigation";
+import AuthContext from "../Context/AuthContext";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const defaultImage = "/vector.jpg";
 
 export default function Blog() {
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [prompt, setPrompt] = useState("");
@@ -61,7 +65,7 @@ export default function Blog() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !content || !category) {
+    if (!title || !description || !content || !category || !selectedImage) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -76,6 +80,7 @@ export default function Blog() {
       metatitle,
       metadescription,
       cover: selectedImage,
+      author: user?.name || user?.email,
     };
 
     let result = await fetch(`${BASE_URL}/api/Blog`, {
@@ -84,7 +89,8 @@ export default function Blog() {
     });
     result = await result.json();
     if (result.success) {
-      toast.success("New Data Added.");
+      toast.success("New Blog Created Successfully.");
+      router.push("/components/BlogDashboard/Bloglist");
       setTitle("");
       setDescription("");
       setPrompt("");
@@ -95,7 +101,7 @@ export default function Blog() {
       setMetadescription("");
       setSelectedImage(null);
     } else {
-      toast.error("Failed to add data.");
+      toast.error("Failed to Create Blog.");
     }
   };
 

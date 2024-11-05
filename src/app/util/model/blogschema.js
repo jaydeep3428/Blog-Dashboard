@@ -10,6 +10,7 @@ const blogdata = new mongoose.Schema({
   tags: String,
   metatitle: String,
   metadescription: String,
+  author: String,
 });
 
 export const BlogData =

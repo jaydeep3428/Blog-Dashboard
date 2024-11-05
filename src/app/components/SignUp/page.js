@@ -269,7 +269,7 @@ export default function SignUp() {
                   <Button
                     type="submit"
                     color="primary"
-                    className="w-full text-xl"
+                    className="w-full text-lg"
                     size="lg"
                   >
                     CONTINUE
@@ -283,7 +283,7 @@ export default function SignUp() {
                   <span className="ml-3">
                     <Link
                       href="../components/SignIn"
-                      className="text-lg text-primary"
+                      className="text-lg text-primary hover:border-b-1 border-primary"
                     >
                       Login
                     </Link>

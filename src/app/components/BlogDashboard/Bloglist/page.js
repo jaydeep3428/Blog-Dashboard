@@ -16,6 +16,7 @@ import {
   ModalBody,
   ModalFooter,
   Skeleton,
+  Tooltip,
 } from "@nextui-org/react";
 import Image from "next/image";
 import { FaCopy, FaPencil, FaPlus } from "react-icons/fa6";
@@ -23,31 +24,59 @@ import { BsBoxArrowUpRight, BsThreeDots } from "react-icons/bs";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { toast, Toaster } from "sonner";
 import AuthContext from "../Context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Bloglist() {
   const { user } = useContext(AuthContext);
   const [blogdata, setBlogData] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
+  const [editLoading, setEditLoading] = useState(false);
   const [currentBlogId, setCurrentBlogId] = useState(null);
   const [openPopoverId, setOpenPopoverId] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const router = useRouter();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [blogsPerPage, setBlogsPerPage] = useState(4);
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const handleEditClick = async (id) => {
+    setEditLoading(true); // Show loader
+    try {
+      // Redirect to edit page
+      router.push(`Bloglist/${id}`);
+    } catch (error) {
+      console.error("Error navigating to edit page:", error);
+    } finally {
+      setEditLoading(false); // Hide loader
+    }
+  };
 
   useEffect(() => {
     const fetchList = async () => {
       try {
         const data = await fetch(`${BASE_URL}/api/Blog`);
         const result = await data.json();
-        setBlogData(result.result);
-        setLoading(false); // Stop loading after fetching data
+
+        if (user?.role === "admin") {
+          setBlogData(result.result);
+        } else {
+          const userBlogs = result.result.filter(
+            (blog) => blog.author === (user?.name || user?.email)
+          );
+          setBlogData(userBlogs);
+        }
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch data:", error);
-        setLoading(false); // Stop loading on error
+        setLoading(false);
       }
     };
-    fetchList();
-  }, [BASE_URL]);
+    if (user) {
+      fetchList();
+    }
+  }, [BASE_URL, user]);
 
   const userInitial = user?.name
     ? user.name.charAt(0).toUpperCase()
@@ -83,6 +112,34 @@ export default function Bloglist() {
     }
   };
 
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = blogdata.slice(indexOfFirstBlog, indexOfLastBlog);
+
+  const getItemsPerPage = () => {
+    if (typeof window !== "undefined") {
+      if (window.innerWidth < 640) {
+        return 1; // Mobile
+      } else if (window.innerWidth < 1024) {
+        return 2; // Tablet
+      } else {
+        return 4; // Laptop/Desktop
+      }
+    }
+    return 4; // Default to 3 if window is not defined
+  };
+
+  useEffect(() => {
+    setBlogsPerPage(getItemsPerPage());
+
+    const handleResize = () => {
+      setBlogsPerPage(getItemsPerPage());
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div>
       <Toaster richColors position="top-right" />
@@ -108,7 +165,7 @@ export default function Bloglist() {
             </h1>
           </div>
           <div>
-            <div className="grid grid-rows-3 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4">
+            <div className="grid grid-rows-1 sm:grid-rows-2 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4">
               {loading ? (
                 Array.from({ length: 4 }).map((_, idx) => (
                   <Card key={idx}>
@@ -129,18 +186,18 @@ export default function Bloglist() {
                     </CardBody>
                   </Card>
                 ))
-              ) : blogdata.length > 0 ? (
-                blogdata.map((e) => (
+              ) : currentBlogs.length > 0 ? (
+                currentBlogs.map((e) => (
                   <Card key={e._id}>
                     <CardBody className="p-2">
                       <div className="flex flex-col sm:flex-row-reverse">
-                        <div className="relative w-full">
+                        <div className="relative w-full overflow-hidden rounded-xl">
                           <Image
                             src={e.cover}
                             width={200}
                             height={150}
                             alt="#"
-                            className="w-full h-64 object-cover rounded-xl"
+                            className="w-full h-64 object-cover transition-transform duration-300 ease-in-out transform hover:scale-125"
                           />
                         </div>
                         <div className="px-0 sm:px-4 w-full">
@@ -190,10 +247,9 @@ export default function Bloglist() {
                                     startContent={<FaPencil />}
                                     variant="light"
                                     className="w-full justify-start gap-5"
-                                    as={Link}
-                                    href={"Bloglist/" + e._id}
+                                    onPress={() => handleEditClick(e._id)} // On click, set loading
                                   >
-                                    Edit
+                                    {editLoading ? "Loading..." : "Edit"}
                                   </Button>
                                 </div>
                                 <div className="text-medium flex items-center gap-4">
@@ -221,12 +277,14 @@ export default function Bloglist() {
                           </Popover>
                         </div>
                         <div className="absolute right-4 top-6">
-                          <span
-                            color="foreground"
-                            className="text-tiny bg-foreground-200 px-4 pt-3 pb-3 rounded-xl"
-                          >
-                            {userInitial}
-                          </span>
+                          <Tooltip content={e.author}>
+                            <span
+                              color="foreground"
+                              className="text-tiny bg-foreground-200 px-4 pt-3 pb-3 rounded-xl cursor-pointer"
+                            >
+                              {userInitial}
+                            </span>
+                          </Tooltip>
                         </div>
                       </div>
                     </CardBody>
@@ -238,7 +296,12 @@ export default function Bloglist() {
             </div>
           </div>
           <div className="flex justify-center pt-8">
-            <Pagination showControls total={1} />
+            <Pagination
+              total={Math.ceil(blogdata.length / blogsPerPage)}
+              initialPage={1}
+              page={currentPage}
+              onChange={(page) => setCurrentPage(page)}
+            />
           </div>
         </div>
       </div>

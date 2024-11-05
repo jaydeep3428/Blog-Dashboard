@@ -104,13 +104,13 @@ export default function BookMark() {
           {currentItems.map((bookmark) => (
             <Card key={bookmark.id}>
               <CardBody className="p-2">
-                <div className="relative">
+                <div className="relative overflow-hidden rounded-xl">
                   <Image
                     src={bookmark.image}
                     width={300}
                     height={250}
                     alt="#"
-                    className="w-full h-56 object-cover rounded-xl"
+                    className="w-full h-56 object-cover rounded-xl transition-transform duration-300 ease-in-out transform hover:scale-125"
                   />
                 </div>
                 <div className="px-1 sm:px-4">

@@ -57,11 +57,11 @@ export default function BlogDashboard() {
                   our application here&apos;s basic example:
                 </p>
                 <p className="py-6 text-warning-300">Install React Router:</p>
-                <Snippet className="w-full">
+                <Snippet className="sm:w-full">
                   npm install react-router-dom
                 </Snippet>
                 <p className="py-6 text-success-400">App.js</p>
-                <Snippet className="w-full">
+                <Snippet className="sm:w-full">
                   <span style={{ color: "purple" }}>
                     import React from &quot;react&quot;;
                   </span>

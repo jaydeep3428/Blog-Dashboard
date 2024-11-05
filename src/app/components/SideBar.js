@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import { MdOutlineAnalytics } from "react-icons/md";
-import { IoIosReturnLeft } from "react-icons/io";
+import { IoIosReturnLeft, IoIosReturnRight } from "react-icons/io";
 import { FaBook } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { GiBookCover } from "react-icons/gi";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { Tooltip } from "@nextui-org/react";
 
 export default function SideBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -18,8 +19,8 @@ export default function SideBar() {
 
   const getLinkClasses = (linkPath) => {
     return pathname === linkPath
-      ? "font-semibold text-primary-500 bg-primary-50" // Active link styles
-      : "font-semibold"; // Default link styles
+      ? "font-semibold text-primary-500 bg-primary-50 hover:text-primary-400"
+      : "font-semibold hover:bg-foreground-50";
   };
 
   const getIconClasses = (linkPath) => {
@@ -31,7 +32,7 @@ export default function SideBar() {
   return (
     <div>
       <aside
-        className={`flex flex-col h-screen border-r border-foreground-200 transition-width duration-300 ${
+        className={`flex flex-col h-screen border-r border-divider transition-width duration-300 ${
           isCollapsed ? "w-20" : "w-72"
         } hidden lg:flex`} // Hide on mobile screens
       >
@@ -46,20 +47,29 @@ export default function SideBar() {
                 <p className="text-primary font-semibold">Dashboard</p>
               )}
             </div>
-            <div
-              className="border-2 border-foreground-200 rounded-xl p-2 cursor-pointer"
-              onClick={toggleSidebar}
+            <Tooltip
+              content={isCollapsed ? "Expand" : "Collapse"}
+              placement="right"
             >
-              <IoIosReturnLeft size={20} />
-            </div>
+              <div
+                className="border-2 border-foreground-200 rounded-xl p-2 hover:bg-foreground-200 cursor-pointer"
+                onClick={toggleSidebar}
+              >
+                {isCollapsed ? (
+                  <IoIosReturnRight size={20} />
+                ) : (
+                  <IoIosReturnLeft size={20} />
+                )}
+              </div>
+            </Tooltip>
           </div>
-          <div className="pt-10">
+          <div className="pt-6">
             <div>
-              <ul className="flex flex-col">
+              <ul className="flex flex-col gap-y-2">
                 <li
                   className={`flex items-center ${
                     isCollapsed ? "justify-center" : "justify-start"
-                  } gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                  } gap-8 rounded-xl p-3.5 cursor-pointer transition-all duration-300 ${getLinkClasses(
                     "/components/BlogDashboard/Analytics"
                   )}`}
                 >
@@ -75,7 +85,7 @@ export default function SideBar() {
                 <li
                   className={`flex items-center ${
                     isCollapsed ? "justify-center" : "justify-start"
-                  } gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                  } gap-8 rounded-xl p-3.5 cursor-pointer transition-all duration-300 ${getLinkClasses(
                     "/components/BlogDashboard/Bloglist"
                   )}`}
                 >
@@ -94,7 +104,7 @@ export default function SideBar() {
                 <li
                   className={`flex items-center ${
                     isCollapsed ? "justify-center" : "justify-start"
-                  } gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                  } gap-8 rounded-xl p-3.5 cursor-pointer transition-all duration-300 ${getLinkClasses(
                     "/components/BlogDashboard/Blog"
                   )}`}
                 >
@@ -113,7 +123,7 @@ export default function SideBar() {
                 <li
                   className={`flex items-center ${
                     isCollapsed ? "justify-center" : "justify-start"
-                  } gap-8 rounded-xl p-3.5 cursor-pointer ${getLinkClasses(
+                  } gap-8 rounded-xl p-3.5 cursor-pointer transition-all duration-300 ${getLinkClasses(
                     "/components/BlogDashboard/BookMark"
                   )}`}
                 >
